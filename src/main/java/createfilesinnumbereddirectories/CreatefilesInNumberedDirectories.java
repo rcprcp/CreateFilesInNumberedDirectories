@@ -20,12 +20,6 @@ public class CreatefilesInNumberedDirectories {
   private static boolean OUTPUT_JSON = true;
   private int dirCount;
   private int filesPerDirectory;
-  private String directoryName;
-
-  private CreatefilesInNumberedDirectories(String directoryName, int dirCount, int filesPerDirectory) {
-    this.dirCount = dirCount;
-    this.filesPerDirectory = filesPerDirectory;
-  }
 
   public static void main(String... args) throws IOException {
     CreatefilesInNumberedDirectories cf = new CreatefilesInNumberedDirectories(DIRECTORY_NAME,
@@ -33,6 +27,11 @@ public class CreatefilesInNumberedDirectories {
         FILES_PER_DIRCTORY
     );
     cf.run();
+  }
+
+  private CreatefilesInNumberedDirectories(String directoryName, int dirCount, int filesPerDirectory) {
+    this.dirCount = dirCount;
+    this.filesPerDirectory = filesPerDirectory;
   }
 
   private void run() throws IOException {
