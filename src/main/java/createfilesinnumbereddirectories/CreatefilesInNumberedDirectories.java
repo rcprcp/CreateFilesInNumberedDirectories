@@ -5,36 +5,47 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.StringJoiner;
 import java.util.UUID;
 
 public class CreatefilesInNumberedDirectories {
 
-  private static final String DIRECTORY_NAME = "/Users/bob/test88";
+  private static final String DIRECTORY_NAME = "/Users/bob/input";
   private static final String SUB_DIR_PREFIX = "/dir";
-  private static final String SUFFIX = ".tmp";
+  private static final String SUFFIX = ".json";
   private static final String DELIM = "/";
 
-  private static final int NUM_DIRECTORIES = 500;
-  private static final int FILES_PER_DIRCTORY = 300;
-  private static final int LINES_PER_FILE = 100;
-  private static boolean OUTPUT_JSON = true;
-  private int dirCount;
-  private int filesPerDirectory;
+  private static final int NUM_DIRECTORIES = 20;
+  private static final int FILES_PER_DIRECTORY = 50;
+  private static final int LINES_PER_FILE = 10000;
+  private static final int COLUMNS_PER_LINE = 400;
+  private enum OutputTypes {
+    JSON, DELIMITED, TEXT
+  }
 
   public static void main(String... args) throws IOException {
-    CreatefilesInNumberedDirectories cf = new CreatefilesInNumberedDirectories(DIRECTORY_NAME,
+    CreatefilesInNumberedDirectories cf = new CreatefilesInNumberedDirectories();
+    cf.run(DIRECTORY_NAME,
         NUM_DIRECTORIES,
-        FILES_PER_DIRCTORY
-    );
-    cf.run();
+        FILES_PER_DIRECTORY,
+        LINES_PER_FILE,
+        COLUMNS_PER_LINE,
+        OutputTypes.JSON);
   }
 
-  private CreatefilesInNumberedDirectories(String directoryName, int dirCount, int filesPerDirectory) {
-    this.dirCount = dirCount;
-    this.filesPerDirectory = filesPerDirectory;
+  private CreatefilesInNumberedDirectories() {
+
   }
 
-  private void run() throws IOException {
+  private void run(
+      String directoryName,
+      int dirCount,
+      int filesPerDirectory,
+      int linesPerFile,
+      int columnsPerLine,
+      OutputTypes type
+      ) throws IOException {
+
     FileUtils.deleteDirectory(new File(DIRECTORY_NAME));
     FileUtils.forceMkdir(new File(DIRECTORY_NAME));
 
@@ -45,11 +56,28 @@ public class CreatefilesInNumberedDirectories {
       for (int fc = 0; fc < filesPerDirectory; fc++) {
         String fn = dir + DELIM  + UUID.randomUUID() + SUFFIX;
         try (PrintWriter pw = new PrintWriter(fn)) {
-          for (int i = 0; i < LINES_PER_FILE; i++) {
-            if (OUTPUT_JSON) {
-              pw.println("{\"id\": " + i + ", \"fname\": \"" + UUID.randomUUID() + "\", \"lname\": \"" + UUID.randomUUID() + "\"}");
-            } else {
-              pw.println("text format.  directory " + di + " filenum " + fc + " line " + i);
+          for (int i = 1; i < LINES_PER_FILE; i++) {
+            switch(type) {
+              case JSON:
+                StringJoiner join = new StringJoiner(",", "", "");
+                for(int j = 1; j <= COLUMNS_PER_LINE ;j++) {
+                  join.add(String.format("\"c%d\": %d", j, j * i));
+                }
+                pw.println("{" + join.toString() + "}");
+                break;
+
+              case DELIMITED:
+                StringJoiner j2 = new StringJoiner(",", "", "");
+                for(int j = 1; j <= COLUMNS_PER_LINE ;j++) {
+                  j2.add(String.format("\"c%d\"|%d", j, j * i));
+                }
+                pw.println(j2.toString());
+
+                break;
+
+              case TEXT:
+                pw.println("text format.  directory " + di + " filenum " + fc + " line " + i);
+                break;
             }
           }
         }
