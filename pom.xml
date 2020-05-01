@@ -12,7 +12,7 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <slf4jVersion>1.8.0-beta2</slf4jVersion>
-    <fully.qualified.main.class>com.streamsets.createfilesinnumbereddirectories</fully.qualified.main.class>
+    <fully.qualified.main.class>createfilesinnumbereddirectories.CreatefilesInNumberedDirectories</fully.qualified.main.class>
   </properties>
 
   <dependencies>
